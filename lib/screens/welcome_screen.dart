@@ -3,17 +3,70 @@ import 'package:flash_chat/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  static const  String id = 'welcome_screen';
+  static const String id = 'welcome_screen';
 
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+// The SingleTickerProviderStateMixin provide the capability to act as a Ticker
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  Animation animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = AnimationController(
+      duration: Duration(seconds: 1),
+      vsync: this,
+    );
+
+//    // The upperBound should always be between 0 and 1 for curvedAnimation
+//    animation = CurvedAnimation(
+//      parent: controller,
+//      curve: Curves.decelerate,
+//    );
+
+    /**
+     * Tween animation take a beginning value and an end value
+      */
+    animation =
+        ColorTween(begin: Colors.blueGrey, end: Colors.white).animate(controller);
+
+    controller.forward();
+
+    /**
+     * Infinite loop animation
+     */
+//    animation.addStatusListener((status) {
+//      if (status == AnimationStatus.completed) {
+//        controller.reverse(from: 1.0);
+//      } else if (status == AnimationStatus.dismissed) {
+//        controller.forward();
+//      }
+//    });
+
+    controller.addListener(() {
+      setState(() {
+        print(animation.value);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    // Destroy the controller
+    controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: animation.value,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -33,6 +86,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   'Flash Chat',
                   style: TextStyle(
                     fontSize: 45.0,
+                    color: Colors.black,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
