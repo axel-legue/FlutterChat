@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flash_chat/screens/login_screen.dart';
 import 'package:flash_chat/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
@@ -24,30 +25,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       vsync: this,
     );
 
-//    // The upperBound should always be between 0 and 1 for curvedAnimation
-//    animation = CurvedAnimation(
-//      parent: controller,
-//      curve: Curves.decelerate,
-//    );
-
     /**
      * Tween animation take a beginning value and an end value
-      */
-    animation =
-        ColorTween(begin: Colors.blueGrey, end: Colors.white).animate(controller);
+     */
+    animation = ColorTween(begin: Colors.blueGrey, end: Colors.white)
+        .animate(controller);
 
     controller.forward();
-
-    /**
-     * Infinite loop animation
-     */
-//    animation.addStatusListener((status) {
-//      if (status == AnimationStatus.completed) {
-//        controller.reverse(from: 1.0);
-//      } else if (status == AnimationStatus.dismissed) {
-//        controller.forward();
-//      }
-//    });
 
     controller.addListener(() {
       setState(() {
@@ -82,13 +66,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     height: 60.0,
                   ),
                 ),
-                Text(
-                  'Flash Chat',
-                  style: TextStyle(
+                TypewriterAnimatedTextKit(
+                  text: ['Flash Chat'],
+                  textStyle: TextStyle(
                     fontSize: 45.0,
                     color: Colors.black,
                     fontWeight: FontWeight.w900,
                   ),
+                  textAlign: TextAlign.start,
                 ),
               ],
             ),
