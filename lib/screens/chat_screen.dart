@@ -35,15 +35,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  /// Here we listen to data pushed to firestore
-  void messagesStream() async {
-    await for (var snapshot in _firestore.collection('messages').snapshots()) {
-      for (var message in snapshot.documents) {
-        print(message.data);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,8 +74,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   FlatButton(
                     onPressed: () {
                       messageTextController.clear();
-                      _firestore.collection('messages').add(
-                          {'sender': loggedInUser.email, 'text': messageText});
+                      print(
+                          'email : ${loggedInUser.email}  text: $messageText  timestamp:${Timestamp.now()}');
+                      _firestore.collection('messages').add({
+                        'sender': loggedInUser.email,
+                        'text': messageText,
+                        'timestamp': Timestamp.now()
+                      });
                     },
                     child: Text(
                       'Send',
@@ -115,19 +111,22 @@ class MessagesStream extends StatelessWidget {
             ),
           );
         }
-        final messages = snapshot.data.documents.reversed;
+        final messages = snapshot.data.documents;
 
         for (var message in messages) {
+          final messageTimestamp = message.data['timestamp'] as Timestamp;
           final messageText = message.data['text'];
           final messageSender = message.data['sender'];
           final currentUser = loggedInUser.email;
 
           final messageBubble = MessageBubble(
+              timestamp: messageTimestamp,
               text: messageText,
               sender: messageSender,
               isMe: currentUser == messageSender);
 
           messageBubbles.add(messageBubble);
+          messageBubbles.sort((a, b) => b.timestamp.compareTo(a.timestamp));
         }
         return Expanded(
           child: ListView(
@@ -145,8 +144,9 @@ class MessageBubble extends StatelessWidget {
   final String sender;
   final String text;
   final bool isMe;
+  final Timestamp timestamp;
 
-  MessageBubble({this.sender, this.text, this.isMe});
+  MessageBubble({this.sender, this.text, this.isMe, this.timestamp});
 
   @override
   Widget build(BuildContext context) {
